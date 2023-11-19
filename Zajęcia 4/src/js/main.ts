@@ -1,9 +1,15 @@
-document.getElementById("fillFormButton").onclick = () => { fillForm(); }
-document.getElementById("customerForm").addEventListener("submit", (event) => { return saveCustomer(event); })
+// TypeScript hack
+function getElementById(elementName: string): HTMLFormElement {
+    return document.getElementById(elementName) as HTMLFormElement;
+}
+
+
+getElementById("fillFormButton").onclick = () => { fillForm(); }
+getElementById("customerForm").addEventListener("submit", (event) => { return saveCustomer(event); })
 
 // Customer information modal box
-let customerInfoModal = document.getElementById("customerInfoModal");
-document.getElementById("closeCustomerInfoModal").onclick = () => { customerInfoModal.style.display = "none"; }
+let customerInfoModal = getElementById("customerInfoModal");
+getElementById("closeCustomerInfoModal").onclick = () => { customerInfoModal.style.display = "none"; }
 window.onclick = (event) => {
     if (event.target == customerInfoModal) {
         customerInfoModal.style.display = "none";
@@ -18,11 +24,11 @@ var customerMap = new Map();
 refreshCustomerList();
 
 
-function saveCustomer(event) {
+function saveCustomer(event: Event) {
     event.preventDefault();
 
-    let newCustomer = new Customer();
-    let formData = new FormData(document.getElementById("customerForm"));
+    let newCustomer: {[index: string]: any} = new Customer();
+    let formData = new FormData(getElementById("customerForm"));
     for (let data of formData) {
         newCustomer[data[0]] = data[1];
     }
@@ -32,7 +38,7 @@ function saveCustomer(event) {
     refreshCustomerList();
 }
 
-function loadCustomer(nip) {
+function loadCustomer(nip: string) {
     let loadedCustomer = customerMap.get(nip);
 
     if (loadedCustomer) {
@@ -42,17 +48,17 @@ function loadCustomer(nip) {
     }
 }
 
-function displayCustomer(nip) {
+function displayCustomer(nip: string) {
     let loadedCustomer = customerMap.get(nip);
 
     if (loadedCustomer) {
-        let customerInfoModal = document.getElementById("customerInfoModal");
-        let customerInfoList = document.getElementById("customerInfoList");
+        let customerInfoModal = getElementById("customerInfoModal");
+        let customerInfoList = getElementById("customerInfoList");
         customerInfoList.innerHTML = "";
 
-        for (key in loadedCustomer) {
+        for (const key in loadedCustomer) {
             customerInfoList.innerHTML += `<div class="row align-items-start">
-                <div class="col col-5 fw-bold">${JsToHumanReadableCustomerInfo[key]}</div>
+                <div class="col col-5 fw-bold">${jsToHumanReadableCustomerInfo[key]}</div>
                 <div class="col col-7">${loadedCustomer[key]}</div>
             </div>`;
         }
@@ -63,15 +69,16 @@ function displayCustomer(nip) {
     }
 }
 
-function removeCustomer(nip) {
+function removeCustomer(nip: string) {
     customerMap.delete(nip);
 
     refreshCustomerList();
 }
 
 function fillForm(customer = DEFAULT_CUSTOMER) {
-    for (let key in customer) {
-        let element = document.getElementById(key);
+    let key: keyof typeof customer;
+    for (key in customer) {
+        let element = getElementById(key);
 
         if (element.type == "checkbox") {
             element.checked = customer[key];
@@ -82,12 +89,12 @@ function fillForm(customer = DEFAULT_CUSTOMER) {
 }
 
 function refreshCustomerList() {
-    let customerListContainer = document.getElementById("customerListContainer");
+    let customerListContainer = getElementById("customerListContainer");
 
     if (customerMap.size == 0) {
         customerListContainer.style.display = "none";
     } else {
-        let customerListElement = document.getElementById("customerList");
+        let customerListElement = getElementById("customerList");
         customerListElement.innerHTML = "";
 
         for (let [nip, customer] of customerMap) {

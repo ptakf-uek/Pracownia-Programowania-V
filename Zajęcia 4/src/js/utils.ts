@@ -1,4 +1,4 @@
-var JsToHumanReadableCustomerInfo = {
+const jsToHumanReadableCustomerInfo: {[index: string]: any} = {
     "companyName": "Company name",
     "nip": "NIP",
     "city": "City",
